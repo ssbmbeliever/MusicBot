@@ -83,6 +83,9 @@ class MusicBot(discord.Client):
         self.init_ok = False
         self.cached_client_id = None
 
+        #LethalLuggage
+        self.held_messages = {}
+
         if not self.autoplaylist:
             print("Warning: Autoplaylist is empty, disabling.")
             self.config.auto_playlist = False
@@ -720,6 +723,25 @@ class MusicBot(discord.Client):
         print()
         # t-t-th-th-that's all folks!
 
+    # LethalLuggage
+    async def cmd_holdthis(self, author, to_hold):
+        """
+        Usage:
+            {command_prefix}hold message
+
+        Holds a message for the user to get back later.
+        Reply to confirm receipt of request.
+        """
+        self.held_messages[author.id] = to_hold
+        return Response("I'll hold that for you. When you want it back just type %sgimme" % self.config.command_prefix, reply=True, delete_after=35)
+    async def cmd_gimme(self, author):
+        """
+        Usage:
+            {command_prefix}gimme
+
+        Gives the user back the message held for them.
+        """
+        return Response(self.held_messages[author.id], reply=True, delete_after=60)
     async def cmd_help(self, command=None):
         """
         Usage:
